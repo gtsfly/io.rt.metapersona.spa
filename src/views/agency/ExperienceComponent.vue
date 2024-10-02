@@ -26,7 +26,11 @@
               :visible="false"
               width="50px"
             ></e-column>
-            <e-column field="name" headerText="Name" textAlign="left"></e-column>
+            <e-column
+              field="name"
+              headerText="Name"
+              textAlign="left"
+            ></e-column>
             <e-column
               field="description"
               headerText="Description"
@@ -60,7 +64,7 @@ import {
   Resize,
 } from "@syncfusion/ej2-vue-grids";
 import { useToast } from "vue-toastification";
-import AdminLayout from './AdminLayout.vue'; 
+import AdminLayout from "./AdminLayout.vue";
 
 @Options({
   components: {
@@ -119,7 +123,7 @@ export default class ExperienceComponent extends Vue {
       }
     } catch (error: any) {
       this.toast.error(
-        `Error: ${error?.response?.data?.message || error.message}`,
+        `Error: ${error?.response?.data?.message || error.message}`
       );
       this.experiences = await getAllExperiences();
     }

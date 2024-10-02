@@ -11,7 +11,7 @@
               <img src="@/assets/logo.png" alt="Logo" class="overlay-logo">
             </div>
             <h1>Benzersiz Deneyimler, Eşsiz Fiyat Garantisi</h1>
-            <a href="/customer/search-page" class="btn">Başlayın</a>
+            <a href="/customer/user-form" class="btn">Başlayın</a>
           </div>
         </header>
       </template>

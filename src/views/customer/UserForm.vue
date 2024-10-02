@@ -1,19 +1,21 @@
 <template>
   <CustomerLayout>
-    <div class="container mt-5">
-      <div class="card p-4">
-        <h2 class="mb-4">Kullanıcı Bilgileri</h2>
-        <form @submit.prevent="submitForm">
-          <div class="form-group mb-3">
-            <label for="name">İsim:</label>
-            <input type="text" id="name" v-model="name" class="form-control" required />
-          </div>
-          <div class="form-group mb-3">
-            <label for="email">Email:</label>
-            <input type="email" id="email" v-model="email" class="form-control" required />
-          </div>
-          <button type="submit" class="btn btn-primary w-100">Devam Et</button>
-        </form>
+    <div class="background">
+      <div class="container mt-5">
+        <div class="card p-4 shadow">
+          <h2 class="mb-4">Kullanıcı Bilgileri</h2>
+          <form @submit.prevent="submitForm">
+            <div class="form-group mb-3">
+              <label for="name">İsim:</label>
+              <input type="text" id="name" v-model="name" class="form-control" required />
+            </div>
+            <div class="form-group mb-3">
+              <label for="email">Email:</label>
+              <input type="email" id="email" v-model="email" class="form-control" required />
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Devam Et</button>
+          </form>
+        </div>
       </div>
     </div>
   </CustomerLayout>
@@ -62,19 +64,33 @@ export default {
 </script>
 
 <style scoped>
+.background {
+  background-image: url('/src/assets/background.jpg'); 
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
 .container {
   max-width: 600px;
   margin: auto;
+  background-color: rgba(255, 255, 255, 0.9); 
+  border-radius: 15px;
+  padding: 20px;
 }
 
 .card {
   background-color: white;
   border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
 }
 
 .card h2 {
   text-align: center;
   color: #343a40;
+  font-weight: bold;
 }
 
 .card .form-group label {
@@ -84,11 +100,17 @@ export default {
 
 .card .form-control {
   border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); 
 }
 
 .card .btn {
   background-color: #007bff;
   border: none;
   font-weight: bold;
+  transition: background-color 0.3s ease;
+}
+
+.card .btn:hover {
+  background-color: #0056b3;
 }
 </style>

@@ -19,6 +19,6 @@ app.use(Toast, {
 
 // Registering Syncfusion license key
 registerLicense(
-  "ORg4AjUWIQA/Gnt2U1hhQlJBfVddX2RWfFN0QXNcdVtyflFOcC0sT3RfQFljTnxbdkBmXH9ZeHNWRA==",
+  "Ngo9BigBOggjHTQxAR8/V1NCaF1cXGdCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWH9ecnVQRGZYU0JzXEQ="
 );
 app.mount("#app");

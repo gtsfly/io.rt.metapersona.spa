@@ -1,34 +1,38 @@
 <template>
   <AdminLayout>
-  <div>
-    <h1 style="text-align: Left">User List</h1>
-    <ejs-grid
-      :dataSource="users"
-      :allowResizing="true"
-      :allowSorting="true"
-      :allowFiltering="true"
-      allowPaging="true"
-      :filterSettings="filterSettings"
-      :editSettings="editSettings"
-      :toolbar="toolbar"
-      :sortSettings="initialSort"
-      :pageSettings="pageSettings"
-      @actionComplete="onActionComplete"
-    >
-      <e-columns>
-        <e-column
-          field="user_id"
-          headerText="ID"
-          textAlign="Left"
-          isPrimaryKey="true"
-          :visible="false"
-          width="50px"
-        ></e-column>
-        <e-column field="name" headerText="Name" textAlign="Left"></e-column>
-        <e-column field="email" headerText="Email" textAlign="Left"></e-column>
-      </e-columns>
-    </ejs-grid>
-  </div>
+    <div>
+      <h1 style="text-align: Left">User List</h1>
+      <ejs-grid
+        :dataSource="users"
+        :allowResizing="true"
+        :allowSorting="true"
+        :allowFiltering="true"
+        allowPaging="true"
+        :filterSettings="filterSettings"
+        :editSettings="editSettings"
+        :toolbar="toolbar"
+        :sortSettings="initialSort"
+        :pageSettings="pageSettings"
+        @actionComplete="onActionComplete"
+      >
+        <e-columns>
+          <e-column
+            field="user_id"
+            headerText="ID"
+            textAlign="Left"
+            isPrimaryKey="true"
+            :visible="false"
+            width="50px"
+          ></e-column>
+          <e-column field="name" headerText="Name" textAlign="Left"></e-column>
+          <e-column
+            field="email"
+            headerText="Email"
+            textAlign="Left"
+          ></e-column>
+        </e-columns>
+      </ejs-grid>
+    </div>
   </AdminLayout>
 </template>
 
@@ -53,7 +57,7 @@ import {
   Resize,
 } from "@syncfusion/ej2-vue-grids";
 import { useToast } from "vue-toastification";
-import AdminLayout from './AdminLayout.vue'; 
+import AdminLayout from "./AdminLayout.vue";
 
 @Options({
   components: {
@@ -112,7 +116,7 @@ export default class UserComponent extends Vue {
       }
     } catch (error: any) {
       this.toast.error(
-        `Error: ${error?.response?.data?.message || error.message}`,
+        `Error: ${error?.response?.data?.message || error.message}`
       );
       this.users = await getAllUsers();
     }

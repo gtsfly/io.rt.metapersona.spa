@@ -1,6 +1,7 @@
-import axios from 'axios';
+import axios from "axios";
 
-const API_BASE_URL = "https://localhost:7018/api";
+const API_BASE_URL =
+  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api";
 
 export interface Stats {
   users: number;
@@ -15,18 +16,23 @@ export interface Reservation {
 }
 
 export const getStats = async (): Promise<Stats> => {
-  const [usersResponse, reservationsResponse, hotelsResponse, experiencesResponse] = await Promise.all([
+  const [
+    usersResponse,
+    reservationsResponse,
+    hotelsResponse,
+    experiencesResponse,
+  ] = await Promise.all([
     axios.get(`${API_BASE_URL}/User`),
     axios.get(`${API_BASE_URL}/ReservationRequest`),
     axios.get(`${API_BASE_URL}/Hotel`),
-    axios.get(`${API_BASE_URL}/Experience`)
+    axios.get(`${API_BASE_URL}/Experience`),
   ]);
 
   return {
     users: usersResponse.data.length,
     reservations: reservationsResponse.data.length,
     hotels: hotelsResponse.data.length,
-    experiences: experiencesResponse.data.length
+    experiences: experiencesResponse.data.length,
   };
 };
 

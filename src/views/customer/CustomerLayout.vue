@@ -11,13 +11,13 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
           <li class="nav-item">
-            <router-link class="nav-link" to="/customer">Home</router-link>
+            <router-link class="nav-link" to="/customer">Anasayfa</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/customer/user-form">Find Your Hotel</router-link>
+            <router-link class="nav-link" to="/customer/user-form">Otelini Bul</router-link>
           </li>
           <li class="nav-item">
-            <router-link class="nav-link" to="/customer/experience-form">Experience Selection</router-link>
+            <router-link class="nav-link" to="/customer/experience-form">Deneyim Listesi</router-link>
           </li>
         </ul>
       </div>

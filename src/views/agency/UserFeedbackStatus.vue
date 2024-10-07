@@ -130,6 +130,12 @@ export default {
       goToUserFeedback,
     };
   },
+  mounted() {
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
+  },
 };
 </script>
 

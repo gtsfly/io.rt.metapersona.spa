@@ -155,6 +155,10 @@ export default {
 
     // Check reservation status
     await this.checkAllReservationsConfirmed();
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
   },
   methods: {
     async checkAllReservationsConfirmed() {

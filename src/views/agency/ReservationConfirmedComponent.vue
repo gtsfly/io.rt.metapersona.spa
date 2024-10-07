@@ -127,6 +127,10 @@ export default class ReservationConfirmedComponent extends Vue {
 
   async mounted() {
     await this.fetchConfirmedReservations();
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
   }
 
   async fetchConfirmedReservations() {

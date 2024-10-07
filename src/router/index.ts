@@ -15,12 +15,18 @@ import ExperienceRating from "@/views/customer/ExperienceRating.vue";
 import ReservationConfirmedComponent from "../views/agency/ReservationConfirmedComponent.vue";
 import UserFeedbackComponent from "@/views/agency/UserFeedbackComponent.vue";
 import UserFeedbackStatus from "@/views/agency/UserFeedbackStatus.vue";
+import AdminLogin from "../views/agency/AdminLogin.vue"; // Giriş bileşenini içe aktar
 
 // Import components
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/admin",
+    name: "AdminLogin",
+    component: AdminLogin, // Giriş bileşenini burada kullan
+  },
+  {
+    path: "/admin/home",
     name: "AdminHome",
     component: AdminHome,
   },

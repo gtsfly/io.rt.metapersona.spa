@@ -113,14 +113,14 @@ import {
   Resize,
 } from "@syncfusion/ej2-vue-grids";
 import { useToast } from "vue-toastification";
-import AdminLayout from './AdminLayout.vue'; 
+import AdminLayout from "./AdminLayout.vue";
 
 @Options({
   components: {
     "ejs-grid": GridComponent,
     "e-columns": ColumnsDirective,
     "e-column": ColumnDirective,
-    AdminLayout, 
+    AdminLayout,
   },
   provide: {
     grid: [Resize, Sort, Page, Toolbar, Edit, Filter],
@@ -142,6 +142,10 @@ export default class ReservationComponent extends Vue {
 
   async mounted() {
     this.reservations = await getAllReservations();
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
   }
 
   async onActionComplete(args: any) {
@@ -172,7 +176,7 @@ export default class ReservationComponent extends Vue {
       }
     } catch (error: any) {
       this.toast.error(
-        `Error: ${error?.response?.data?.message || error.message}`,
+        `Error: ${error?.response?.data?.message || error.message}`
       );
       this.reservations = await getAllReservations();
     }

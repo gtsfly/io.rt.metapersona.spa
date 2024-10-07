@@ -235,6 +235,11 @@ export default defineComponent({
     };
 
     onMounted(() => {
+      const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+      if (!isAdminLoggedIn) {
+        router.push("/admin");
+      }
+
       const storedReservationId = localStorage.getItem("selectedReservationId");
       if (storedReservationId) {
         searchReservationId.value = storedReservationId;
@@ -262,7 +267,7 @@ export default defineComponent({
           this.feedback as UserFeedbackDto
         );
         this.toast.success("Feedback submitted successfully!");
-        this.router.push("/admin");
+        this.router.push("/admin/home");
       } catch (error) {
         this.toast.error("An error occurred while submitting feedback.");
         console.error("Feedback submission error:", error);

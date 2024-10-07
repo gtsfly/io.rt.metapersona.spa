@@ -93,6 +93,10 @@ export default class ExperienceComponent extends Vue {
 
   async mounted() {
     this.experiences = await getAllExperiences();
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
   }
 
   async onActionComplete(args: any) {

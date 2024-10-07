@@ -19,9 +19,12 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
+          <ul class="navbar-nav">
             <li class="nav-item">
-              <router-link class="nav-link" to="/admin" active-class="active"
+              <router-link
+                class="nav-link"
+                to="/admin/home"
+                active-class="active"
                 >Home</router-link
               >
             </li>
@@ -99,6 +102,10 @@
             </li>
           </ul>
         </div>
+        <div class="d-flex">
+          <!-- Flexbox ile sağa hizalama -->
+          <button class="btn btn-danger" @click="logout">Logout</button>
+        </div>
       </div>
     </nav>
     <main class="container-fluid mt-4">
@@ -112,6 +119,12 @@ import { defineComponent } from "vue";
 
 export default defineComponent({
   name: "AdminLayout",
+  methods: {
+    logout() {
+      localStorage.removeItem("isAdminLoggedIn"); // localStorage'dan çıkış bilgilerini sil
+      this.$router.push("/admin"); // Kullanıcıyı admin sayfasına yönlendir
+    },
+  },
 });
 </script>
 

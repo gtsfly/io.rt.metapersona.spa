@@ -157,6 +157,10 @@ export default class ReservationComponent extends Vue {
 
   async mounted() {
     this.reservations = await getAllReservations();
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
   }
 
   async onActionComplete(args: any) {

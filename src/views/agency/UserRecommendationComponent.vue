@@ -368,6 +368,10 @@ export default defineComponent({
     },
   },
   async mounted() {
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
     const route = useRoute();
     if (route.query.identifier) {
       this.identifier = route.query.identifier as string;

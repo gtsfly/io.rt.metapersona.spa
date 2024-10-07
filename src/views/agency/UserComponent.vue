@@ -86,6 +86,10 @@ export default class UserComponent extends Vue {
 
   async mounted() {
     this.users = await getAllUsers();
+    const isAdminLoggedIn = localStorage.getItem("isAdminLoggedIn");
+    if (!isAdminLoggedIn) {
+      this.$router.push("/admin");
+    }
   }
 
   async onActionComplete(args: any) {

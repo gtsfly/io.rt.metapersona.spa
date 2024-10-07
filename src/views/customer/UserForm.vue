@@ -7,13 +7,27 @@
           <form @submit.prevent="submitForm">
             <div class="form-group mb-3">
               <label for="name">İsim:</label>
-              <input type="text" id="name" v-model="name" class="form-control" required />
+              <input
+                type="text"
+                id="name"
+                v-model="name"
+                class="form-control"
+                required
+              />
             </div>
             <div class="form-group mb-3">
               <label for="email">Email:</label>
-              <input type="email" id="email" v-model="email" class="form-control" required />
+              <input
+                type="email"
+                id="email"
+                v-model="email"
+                class="form-control"
+                required
+              />
             </div>
-            <button type="submit" class="btn btn-primary w-100">Devam Et</button>
+            <button type="submit" class="btn btn-primary w-100">
+              Devam Et
+            </button>
           </form>
         </div>
       </div>
@@ -49,14 +63,20 @@ export default {
         const userId = userResponse.user_id;
         this.toast.success("Kullanıcı başarıyla oluşturuldu!");
 
-        // write user_id to localStorage
-        localStorage.setItem('userId', userId);
+        localStorage.setItem("userId", userId);
 
-        // Route to reservation form
-        this.$router.push({ name: 'ReservationForm' });
+        this.$router.push({ name: "ReservationForm" });
       } catch (error) {
-        console.error("Error creating user:", error);
-        this.toast.error("Kullanıcı oluşturulurken hata oluştu.");
+        if (error.response && error.response.status === 409) {
+          this.toast.info("Kullanıcı zaten mevcut, bilgilerle devam ediliyor.");
+          const existingUserId = error.response.data.user_id;
+
+          localStorage.setItem("userId", existingUserId);
+          this.$router.push({ name: "ReservationForm" });
+        } else {
+          console.error("Error creating user:", error);
+          this.toast.error("Kullanıcı oluşturulurken hata oluştu.");
+        }
       }
     },
   },
@@ -65,7 +85,7 @@ export default {
 
 <style scoped>
 .background {
-  background-image: url('/src/assets/background.jpg'); 
+  background-image: url("/src/assets/background.jpg");
   background-size: cover;
   background-position: center;
   min-height: 100vh;
@@ -76,7 +96,7 @@ export default {
 .container {
   max-width: 600px;
   margin: auto;
-  background-color: rgba(255, 255, 255, 0.9); 
+  background-color: rgba(255, 255, 255, 0.9);
   border-radius: 15px;
   padding: 20px;
 }
@@ -84,7 +104,7 @@ export default {
 .card {
   background-color: white;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card h2 {
@@ -100,7 +120,7 @@ export default {
 
 .card .form-control {
   border-radius: 5px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); 
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .card .btn {

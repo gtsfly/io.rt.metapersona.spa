@@ -1,8 +1,7 @@
 import axios from "axios";
 import { HotelExperienceDto } from "../models/HotelExperienceDto";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/HotelExperience";
+const API_BASE_URL = "https://localhost:7018/api/HotelExperience";
 
 export const getAllHotelExperiences = async (): Promise<
   HotelExperienceDto[]

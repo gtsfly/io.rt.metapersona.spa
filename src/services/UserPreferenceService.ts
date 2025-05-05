@@ -1,8 +1,7 @@
 import axios from "axios";
 import { UserPreferenceDto } from "../models/UserPreferenceDto";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/userPreference";
+const API_BASE_URL = "https://localhost:7018/api/userPreference";
 
 export const getAllUserPreferences = async (): Promise<UserPreferenceDto[]> => {
   const response = await axios.get(`${API_BASE_URL}`);

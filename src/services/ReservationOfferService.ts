@@ -14,8 +14,7 @@ export async function saveReservationOffer(
   offer_key: string,
   offerDetails: OfferDetails
 ) {
-  const API_BASE_URL =
-    "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationOffer";
+  const API_BASE_URL = "https://localhost:7018/api/ReservationOffer";
   try {
     const existingOffer = await getReservationOffer(offer_key);
     if (existingOffer) {
@@ -37,8 +36,7 @@ export async function saveReservationOffer(
 export async function getReservationOffer(
   offer_key: string
 ): Promise<OfferDetails | null> {
-  const API_BASE_URL =
-    "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationOffer";
+  const API_BASE_URL = "https://localhost:7018/api/ReservationOffer";
   try {
     const response = await axios.get(`${API_BASE_URL}/${offer_key}`);
     return response.data as OfferDetails;

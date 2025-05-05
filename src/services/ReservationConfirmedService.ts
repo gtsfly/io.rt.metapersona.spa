@@ -27,7 +27,7 @@ export async function confirmHotel(
 
   try {
     const response = await axios.post(
-      "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationConfirmed",
+      "https://localhost:7018/api/ReservationConfirmed",
       reservationConfirmedDto
     );
 
@@ -53,7 +53,7 @@ export async function checkIfReservationConfirmed(
 ): Promise<boolean> {
   try {
     const response = await axios.get(
-      `https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationConfirmed/${reservation_request_id}`
+      `https://localhost:7018/api/ReservationConfirmed/${reservation_request_id}`
     );
     return response.data.isConfirmed;
   } catch (error) {
@@ -66,7 +66,7 @@ export async function getAllConfirmedReservations(): Promise<
 > {
   try {
     const response = await axios.get(
-      "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationConfirmed"
+      "https://localhost:7018/api/ReservationConfirmed"
     );
     return response.data;
   } catch (error) {
@@ -84,10 +84,10 @@ export const getReservationDetails = async (
   try {
     console.log(
       "Sending request:",
-      `https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationConfirmed/check/${reservationId}`
+      `https://localhost:7018/api/ReservationConfirmed/check/${reservationId}`
     );
     const response = await axios.get(
-      `https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationConfirmed/check/${reservationId}`
+      `https://localhost:7018/api/ReservationConfirmed/check/${reservationId}`
     );
     console.log("Received response:", response.data);
     return response.data;

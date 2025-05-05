@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api";
+const API_BASE_URL = "https://localhost:7018/api";
 
 export interface Stats {
   users: number;

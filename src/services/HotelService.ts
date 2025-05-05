@@ -1,8 +1,7 @@
 import axios from "axios";
 import { HotelDto } from "../models/HotelDto";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/Hotel";
+const API_BASE_URL = "https://localhost:7018/api/Hotel";
 
 export const getAllHotels = async (): Promise<HotelDto[]> => {
   try {

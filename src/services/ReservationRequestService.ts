@@ -1,8 +1,7 @@
 import axios from "axios";
 import { ReservationRequestDto } from "../models/ReservationRequestDto";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationRequest";
+const API_BASE_URL = "https://localhost:7018/api/ReservationRequest";
 
 export const getAllReservations = async (): Promise<
   ReservationRequestDto[]

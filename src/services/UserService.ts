@@ -1,8 +1,7 @@
 import axios from "axios";
 import { UserDto } from "../models/UserDto";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/User";
+const API_BASE_URL = "https://localhost:7018/api/User";
 
 export const getAllUsers = async (): Promise<UserDto[]> => {
   const response = await axios.get(`${API_BASE_URL}`);

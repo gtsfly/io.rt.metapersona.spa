@@ -2,8 +2,7 @@ import axios from "axios";
 import { HotelDto } from "../models/HotelDto";
 import { ReservationRequestDto } from "@/models/ReservationRequestDto";
 
-const API_BASE_URL =
-  "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/UserRecommendation";
+const API_BASE_URL = "https://localhost:7018/api/UserRecommendation";
 
 export const getRecommendedHotels = async (
   userId: number
@@ -19,7 +18,7 @@ export const getRecommendedHotels = async (
 
 export const getReservationRequest = async (userId: number) => {
   const response = await axios.get(
-    `https://tubitak-proje.dev.reisetech.io/api/metapersona/api/reservationRequest/${userId}`
+    `https://localhost:7018/api/reservationRequest/${userId}`
   );
   return response.data;
 };

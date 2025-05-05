@@ -244,6 +244,16 @@
                           v-model="offerDetails.check_in_date"
                           id="check_in_date"
                           class="modern-input"
+                          :min="
+                            formatDateForInput(
+                              reservationRequest.check_in_range_start
+                            )
+                          "
+                          :max="
+                            formatDateForInput(
+                              reservationRequest.check_in_range_end
+                            )
+                          "
                           required
                         />
                       </div>
@@ -257,6 +267,17 @@
                           v-model="offerDetails.check_out_date"
                           id="check_out_date"
                           class="modern-input"
+                          :min="
+                            offerDetails.check_in_date ||
+                            formatDateForInput(
+                              reservationRequest.check_in_range_start
+                            )
+                          "
+                          :max="
+                            formatDateForInput(
+                              reservationRequest.check_in_range_end
+                            )
+                          "
                           required
                         />
                       </div>
@@ -651,6 +672,10 @@ export default defineComponent({
         year: "numeric",
       };
       return new Date(dateString).toLocaleDateString("tr-TR", options);
+    },
+    formatDateForInput(dateString: string) {
+      const date = new Date(dateString);
+      return date.toISOString().split("T")[0];
     },
     async confirmHotelSelection(hotel_id: number) {
       try {

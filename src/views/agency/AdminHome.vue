@@ -310,12 +310,14 @@
                       ),
                     ]"
                   >
-                    <div class="status-indicator"></div>
-                    <span>{{
-                      getReservationStatus(
-                        reservation_request.reservation_request_id
-                      )
-                    }}</span>
+                    <div class="status-wrapper">
+                      <div class="status-indicator"></div>
+                      <span>{{
+                        getReservationStatus(
+                          reservation_request.reservation_request_id
+                        )
+                      }}</span>
+                    </div>
                   </td>
                   <td class="date-column">
                     {{ formatDate(reservation_request.created_at) }}
@@ -923,6 +925,7 @@ export default {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
+  table-layout: fixed;
 }
 
 .reservations-table th {
@@ -935,37 +938,40 @@ export default {
   border-bottom: 2px solid #e9ecef;
 }
 
-.table-row {
-  transition: background-color 0.2s ease;
-}
-
-.table-row:hover {
-  background-color: #f8f9fa;
-}
-
 .reservations-table td {
   padding: 16px;
   font-size: 14px;
-  border-bottom: 1px solid #e9ecef;
+  vertical-align: middle;
 }
 
 .id-column {
   font-weight: 500;
   color: #666;
+  width: 8%;
 }
 
 .name-column {
   font-weight: 500;
   color: #1a1a1a;
+  width: 25%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .budget-column {
   font-weight: 500;
   color: #2e7d32;
+  width: 15%;
 }
 
 .status-column {
+  width: 15%;
+}
+
+.status-wrapper {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 8px;
 }
@@ -974,6 +980,17 @@ export default {
   width: 8px;
   height: 8px;
   border-radius: 50%;
+  margin-bottom: 4px;
+}
+
+.date-column {
+  width: 22%;
+  color: #666;
+}
+
+.actions-column {
+  width: 15%;
+  text-align: right;
 }
 
 .status_active .status-indicator {
@@ -990,6 +1007,20 @@ export default {
 
 .status_confirmed {
   color: #1565c0;
+}
+
+.table-responsive {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.reservations-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.reservations-table tbody tr:last-child td {
+  border-bottom: none;
 }
 
 .action-btn {

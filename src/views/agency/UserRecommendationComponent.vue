@@ -1,281 +1,400 @@
 <template>
   <AdminLayout :current_user_name="current_user_name">
-    <div class="container mt-5">
-      <h1 class="mb-4">User Recommendation List</h1>
-      <div class="card p-4 mb-4">
-        <form @submit.prevent="fetchRecommendations">
-          <div class="mb-3">
-            <label for="identifier" class="form-label"
-              >Reservation Request Number:</label
-            >
-            <input
-              type="text"
-              v-model="identifier"
-              id="identifier"
-              class="form-control"
-              placeholder="Enter Request Number"
-            />
-          </div>
-          <button type="submit" class="btn btn-primary">
-            Get Recommendations
-          </button>
-        </form>
+    <div class="recommendation-container">
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-card">
+          <h2 class="search-title">Reservation Request Search</h2>
+          <form @submit.prevent="fetchRecommendations" class="search-form">
+            <div class="input-group">
+              <input
+                type="text"
+                v-model="identifier"
+                id="identifier"
+                class="search-input"
+                placeholder="Enter Request Number"
+              />
+              <button type="submit" class="search-button">
+                <i class="fas fa-search"></i>
+                Get Recommendations
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
 
-      <div v-if="isLoading" class="spinner-border text-primary"></div>
-      <div v-if="alreadyConfirmed" class="alert alert-info">
-        This reservation request has already been confirmed.
+      <div v-if="isLoading" class="loading-container">
+        <div class="spinner"></div>
+        <p>Loading recommendations...</p>
       </div>
 
-      <div v-else>
-        <div v-if="reservationRequest" class="reservation-box mb-4">
-          <h3 class="box-title">Reservation Request Details</h3>
-          <div class="box-content">
-            <p><strong>Location:</strong> {{ reservationRequest.location }}</p>
-            <p><strong>Budget:</strong> ₺{{ reservationRequest.budget }}</p>
-            <p>
-              <strong>Trip Start:</strong>
-              {{ formatDate(reservationRequest.check_in_range_start) }}
-            </p>
-            <p>
-              <strong>Trip End:</strong>
-              {{ formatDate(reservationRequest.check_in_range_end) }}
-            </p>
-            <p>
-              <strong>Stay Duration:</strong>
-              {{ reservationRequest.stay_duration }} days
-            </p>
-            <p><strong>Experience 1:</strong> {{ reservationRequest.exp_1 }}</p>
-            <p><strong>Experience 2:</strong> {{ reservationRequest.exp_2 }}</p>
-            <p><strong>Experience 3:</strong> {{ reservationRequest.exp_3 }}</p>
-            <p>
-              <strong>Adult:</strong> {{ reservationRequest.adult_num }}
-              <strong>Child:</strong> {{ reservationRequest.child_num }}
-            </p>
-          </div>
+      <div v-if="alreadyConfirmed" class="alert-container">
+        <div class="alert alert-info">
+          This reservation request has already been confirmed.
         </div>
+      </div>
 
-        <div
-          v-if="userRecommendations.length === 0"
-          class="alert alert-warning"
-        >
-          No recommendations.
-        </div>
-
-        <ul v-else class="list-group">
-          <li
-            v-for="userRecommendation in userRecommendations"
-            :key="userRecommendation.hotel_id"
-            class="list-group-item recommendation-box"
-            @click="toggleOfferDetails(userRecommendation.hotel_id)"
-          >
-            <div class="recommendation-item">
-              <strong>Location:</strong>
-              <span>{{ userRecommendation.location }}</span>
-            </div>
-            <div class="recommendation-item">
-              <strong>Name:</strong> <span>{{ userRecommendation.name }}</span>
-            </div>
-            <div class="recommendation-item">
-              <strong>Match Point:</strong>
-              <span>{{ userRecommendation.rating.toFixed(2) }}</span>
-            </div>
-
-            <button
-              v-if="getOfferCount(userRecommendation.hotel_id) === 1"
-              class="btn btn-success mt-3"
-              @click="confirmHotelSelection(userRecommendation.hotel_id)"
-            >
-              Confirm Hotel
-            </button>
-
-            <div
-              v-if="isOfferExist(userRecommendation.hotel_id)"
-              class="offer-summary"
-            >
-              <h6>Offer Details:</h6>
-              <p>
-                <strong>Check-in Date :</strong>
-                {{
-                  formatDate(
-                    existingOffers[
-                      `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                    ].check_in_date
-                  )
-                }}
-              </p>
-              <p>
-                <strong>Check-out Date:</strong>
-                {{
-                  formatDate(
-                    existingOffers[
-                      `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                    ].check_out_date
-                  )
-                }}
-              </p>
-              <p>
-                <strong>Price:</strong> ₺{{
-                  existingOffers[
-                    `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                  ].price
-                }}
-              </p>
-              <p>
-                <strong>Room Type:</strong>
-                {{
-                  existingOffers[
-                    `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                  ].room_type
-                }}
-              </p>
-              <p>
-                <strong>Board Type:</strong>
-                {{
-                  existingOffers[
-                    `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                  ].board_type
-                }}
-              </p>
-            </div>
-
-            <div
-              v-if="activeHotel === userRecommendation.hotel_id"
-              class="offer-details mt-3"
-              @click.stop
-            >
-              <h5>Offer Details</h5>
-              <form @submit.prevent="saveOffer(userRecommendation.hotel_id)">
-                <div class="form-group">
-                  <label for="check_in_date">Check in Date</label>
-                  <input
-                    type="date"
-                    v-model="offerDetails.check_in_date"
-                    id="check_in_date"
-                    class="form-control"
-                    :min="offerDetails.check_in_date"
-                    required
-                  />
+      <!-- Content Grid -->
+      <div v-if="!alreadyConfirmed && reservationRequest" class="content-grid">
+        <!-- Left Column - Reservation Details -->
+        <div class="details-column">
+          <div class="details-card">
+            <h3 class="card-title">
+              <i class="fas fa-info-circle"></i>
+              Reservation Request Details
+            </h3>
+            <div class="details-content">
+              <div class="user-info">
+                <div class="user-avatar">
+                  <i class="fas fa-user"></i>
                 </div>
-
-                <div class="form-group">
-                  <label for="check_out_date">Check out Date</label>
-                  <input
-                    type="date"
-                    v-model="offerDetails.check_out_date"
-                    id="check_out_date"
-                    class="form-control"
-                    required
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label for="price">Price</label>
-                  <input
-                    type="number"
-                    v-model.number="offerDetails.price"
-                    id="price"
-                    class="form-control no-spinner"
-                    :placeholder="
-                      existingOffers[
-                        `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                      ]?.price || 'Enter price'
-                    "
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="room_type">Room Type</label>
-                  <input
-                    type="text"
-                    v-model="offerDetails.room_type"
-                    id="room_type"
-                    class="form-control"
-                    :placeholder="
-                      existingOffers[
-                        `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
-                      ]?.room_type || 'Enter room type'
-                    "
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label for="board_type">Board Type</label>
-                  <select
-                    v-model="offerDetails.board_type"
-                    id="board_type"
-                    class="form-control"
-                    required
+                <div class="user-details">
+                  <h4 class="user-name">{{ reservationRequest.user_name }}</h4>
+                  <span class="request-id"
+                    >#{{ reservationRequest.reservation_request_id }}</span
                   >
-                    <option value="">Select board type</option>
-                    <option value="Bed and Breakfast">Bed and Breakfast</option>
-                    <option value="Half Board">Half Board</option>
-                    <option value="Full Board">Full Board</option>
-                    <option value="All Inclusive">All Inclusive</option>
-                    <option value="Room Only">Room Only</option>
-                    <option value="Nonalcohol All Inclusive">
-                      Nonalcohol All Inclusive
-                    </option>
-                    <option value="Nonalcohol Ultra All Inclusive">
-                      Nonalcohol Ultra All Inclusive
-                    </option>
-                    <option value="Full Board Plus">Full Board Plus</option>
-                    <option value="Ultra All Inclusive">
-                      Ultra All Inclusive
-                    </option>
-                  </select>
                 </div>
-                <button type="submit" class="btn btn-success mt-3">
-                  Save Offer
-                </button>
-              </form>
+              </div>
+              <div class="request-details">
+                <div class="detail-row">
+                  <i class="fas fa-map-marker-alt"></i>
+                  <span class="label">Location:</span>
+                  <span class="value">{{ reservationRequest.location }}</span>
+                </div>
+                <div class="detail-row">
+                  <i class="fas fa-wallet"></i>
+                  <span class="label">Budget:</span>
+                  <span class="value highlight"
+                    >₺{{ reservationRequest.budget }}</span
+                  >
+                </div>
+                <div class="detail-row">
+                  <i class="fas fa-calendar-alt"></i>
+                  <span class="label">Trip Period:</span>
+                  <span class="value"
+                    >{{ formatDate(reservationRequest.check_in_range_start) }} -
+                    {{
+                      formatDate(reservationRequest.check_in_range_end)
+                    }}</span
+                  >
+                </div>
+                <div class="detail-row">
+                  <i class="fas fa-clock"></i>
+                  <span class="label">Duration:</span>
+                  <span class="value"
+                    >{{ reservationRequest.stay_duration }} days</span
+                  >
+                </div>
+                <div class="detail-row">
+                  <i class="fas fa-users"></i>
+                  <span class="label">Group Size:</span>
+                  <span class="value"
+                    >{{ reservationRequest.adult_num }} Adults,
+                    {{ reservationRequest.child_num }} Children</span
+                  >
+                </div>
+                <div class="experiences-section">
+                  <h4><i class="fas fa-star"></i> Preferred Experiences</h4>
+                  <div class="experience-tags">
+                    <span class="experience-tag">{{
+                      reservationRequest.exp_1
+                    }}</span>
+                    <span class="experience-tag">{{
+                      reservationRequest.exp_2
+                    }}</span>
+                    <span class="experience-tag">{{
+                      reservationRequest.exp_3
+                    }}</span>
+                  </div>
+                </div>
+              </div>
             </div>
-          </li>
-        </ul>
+          </div>
+        </div>
 
-        <button
-          v-if="hasOffers"
-          @click="showOffers = !showOffers"
-          class="btn btn-info mt-4 custom-offer-button"
-        >
+        <!-- Right Column - Hotel Recommendations -->
+        <div class="recommendations-column">
+          <div class="recommendations-card">
+            <h3 class="card-title">
+              <i class="fas fa-hotel"></i>
+              Hotel Recommendations
+            </h3>
+
+            <div
+              v-if="userRecommendations.length === 0"
+              class="no-recommendations"
+            >
+              <i class="fas fa-info-circle"></i>
+              <p>No recommendations available.</p>
+            </div>
+
+            <div v-else class="recommendations-list">
+              <div
+                v-for="userRecommendation in userRecommendations"
+                :key="userRecommendation.hotel_id"
+                class="recommendation-item"
+                :class="{ active: activeHotel === userRecommendation.hotel_id }"
+                @click="toggleOfferDetails(userRecommendation.hotel_id)"
+              >
+                <div class="recommendation-header">
+                  <div class="hotel-info">
+                    <h4 class="hotel-name">{{ userRecommendation.name }}</h4>
+                    <span class="hotel-location">
+                      <i class="fas fa-map-marker-alt"></i>
+                      {{ userRecommendation.location }}
+                    </span>
+                  </div>
+                  <div class="match-score">
+                    <span class="score-label">Match Score</span>
+                    <span class="score-value">{{
+                      userRecommendation.rating.toFixed(2)
+                    }}</span>
+                  </div>
+                </div>
+
+                <div
+                  v-if="isOfferExist(userRecommendation.hotel_id)"
+                  class="existing-offer"
+                >
+                  <h5>Current Offer</h5>
+                  <div class="offer-details">
+                    <div class="offer-row">
+                      <span>Check-in:</span>
+                      <span>{{
+                        formatDate(
+                          existingOffers[
+                            `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
+                          ].check_in_date
+                        )
+                      }}</span>
+                    </div>
+                    <div class="offer-row">
+                      <span>Check-out:</span>
+                      <span>{{
+                        formatDate(
+                          existingOffers[
+                            `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
+                          ].check_out_date
+                        )
+                      }}</span>
+                    </div>
+                    <div class="offer-row">
+                      <span>Price:</span>
+                      <span class="price"
+                        >₺{{
+                          existingOffers[
+                            `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
+                          ].price
+                        }}</span
+                      >
+                    </div>
+                    <div class="offer-row">
+                      <span>Room:</span>
+                      <span>{{
+                        existingOffers[
+                          `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
+                        ].room_type
+                      }}</span>
+                    </div>
+                    <div class="offer-row">
+                      <span>Board:</span>
+                      <span>{{
+                        existingOffers[
+                          `${reservationRequest.reservation_request_id}_${userRecommendation.hotel_id}`
+                        ].board_type
+                      }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  v-if="getOfferCount(userRecommendation.hotel_id) === 1"
+                  class="confirm-action"
+                >
+                  <button
+                    class="confirm-button"
+                    @click.stop="
+                      confirmHotelSelection(userRecommendation.hotel_id)
+                    "
+                  >
+                    <i class="fas fa-check"></i>
+                    Confirm Hotel
+                  </button>
+                </div>
+
+                <div
+                  v-if="activeHotel === userRecommendation.hotel_id"
+                  class="offer-form"
+                  @click.stop
+                >
+                  <div class="offer-form-header">
+                    <h5><i class="fas fa-plus-circle"></i> Create New Offer</h5>
+                  </div>
+                  <form
+                    @submit.prevent="saveOffer(userRecommendation.hotel_id)"
+                  >
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="check_in_date">
+                          <i class="fas fa-calendar-alt"></i>
+                          Check in Date
+                        </label>
+                        <input
+                          type="date"
+                          v-model="offerDetails.check_in_date"
+                          id="check_in_date"
+                          class="modern-input"
+                          required
+                        />
+                      </div>
+                      <div class="form-group">
+                        <label for="check_out_date">
+                          <i class="fas fa-calendar-alt"></i>
+                          Check out Date
+                        </label>
+                        <input
+                          type="date"
+                          v-model="offerDetails.check_out_date"
+                          id="check_out_date"
+                          class="modern-input"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="form-group">
+                        <label for="price">
+                          <i class="fas fa-tag"></i>
+                          Price
+                        </label>
+                        <div class="price-input-wrapper">
+                          <span class="currency-symbol">₺</span>
+                          <input
+                            type="number"
+                            v-model.number="offerDetails.price"
+                            id="price"
+                            class="modern-input price-input"
+                            required
+                          />
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="room_type">
+                          <i class="fas fa-bed"></i>
+                          Room Type
+                        </label>
+                        <input
+                          type="text"
+                          v-model="offerDetails.room_type"
+                          id="room_type"
+                          class="modern-input"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="board_type">
+                        <i class="fas fa-utensils"></i>
+                        Board Type
+                      </label>
+                      <select
+                        v-model="offerDetails.board_type"
+                        id="board_type"
+                        class="modern-select"
+                        required
+                      >
+                        <option value="">Select board type</option>
+                        <option value="Bed and Breakfast">
+                          Bed and Breakfast
+                        </option>
+                        <option value="Half Board">Half Board</option>
+                        <option value="Full Board">Full Board</option>
+                        <option value="All Inclusive">All Inclusive</option>
+                        <option value="Room Only">Room Only</option>
+                        <option value="Nonalcohol All Inclusive">
+                          Nonalcohol All Inclusive
+                        </option>
+                        <option value="Nonalcohol Ultra All Inclusive">
+                          Nonalcohol Ultra All Inclusive
+                        </option>
+                        <option value="Full Board Plus">Full Board Plus</option>
+                        <option value="Ultra All Inclusive">
+                          Ultra All Inclusive
+                        </option>
+                      </select>
+                    </div>
+                    <div class="form-actions">
+                      <button
+                        type="button"
+                        class="cancel-button"
+                        @click="activeHotel = null"
+                      >
+                        <i class="fas fa-times"></i>
+                        Cancel
+                      </button>
+                      <button type="submit" class="save-offer-button">
+                        <i class="fas fa-check"></i>
+                        Save Offer
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Collect Offers Section -->
+      <div class="collect-offers-section" v-if="hasOffers && !alreadyConfirmed">
+        <button @click="showOffers = !showOffers" class="collect-offers-button">
+          <i
+            :class="showOffers ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"
+          ></i>
           {{ showOffers ? "Hide Offers" : "Collect Offers" }}
         </button>
 
-        <div v-if="showOffers" class="offer-collection-box mt-4">
-          <h3 class="box-title">Available Offers</h3>
-          <ul class="list-group">
-            <li
+        <div v-if="showOffers" class="offers-collection">
+          <h3>Available Offers</h3>
+          <div class="offers-grid">
+            <div
               v-for="(offer, index) in collectedOffers"
               :key="index"
-              class="list-group-item offer-item"
+              class="offer-card"
             >
-              <label class="offer-label">
-                <input
-                  type="checkbox"
-                  v-model="selectedOffers"
-                  :value="offer"
-                />
-                <span class="offer-title"
-                  >{{ offer.hotel_name }} -
-                  <span class="offer-price"
-                    >₺{{ offer.price.toLocaleString() }}</span
-                  ></span
+              <div class="offer-header">
+                <label class="offer-checkbox">
+                  <input
+                    type="checkbox"
+                    v-model="selectedOffers"
+                    :value="offer"
+                  />
+                  <span class="checkmark"></span>
+                </label>
+                <h4>{{ offer.hotel_name }}</h4>
+                <span class="offer-price"
+                  >₺{{ offer.price.toLocaleString() }}</span
                 >
-              </label>
-              <p class="offer-details">
-                <strong>Date Range:</strong>
-                {{ formatDate(offer.check_in_date) }} -
-                {{ formatDate(offer.check_out_date) }}
-              </p>
-              <p class="offer-details">
-                <strong>Room Type:</strong> {{ offer.room_type }}
-              </p>
-              <p class="offer-details">
-                <strong>Board Type:</strong> {{ offer.board_type }}
-              </p>
-            </li>
-          </ul>
-          <button @click="submitSelectedOffers" class="btn btn-success mt-3">
+              </div>
+              <div class="offer-body">
+                <div class="offer-info">
+                  <i class="fas fa-calendar"></i>
+                  {{ formatDate(offer.check_in_date) }} -
+                  {{ formatDate(offer.check_out_date) }}
+                </div>
+                <div class="offer-info">
+                  <i class="fas fa-bed"></i>
+                  {{ offer.room_type }}
+                </div>
+                <div class="offer-info">
+                  <i class="fas fa-utensils"></i>
+                  {{ offer.board_type }}
+                </div>
+              </div>
+            </div>
+          </div>
+          <button @click="submitSelectedOffers" class="submit-offers-button">
+            <i class="fas fa-paper-plane"></i>
             Submit and Send Mail
           </button>
         </div>
@@ -570,7 +689,7 @@ export default defineComponent({
         );
 
         this.toast.success("Hotel confirmed successfully!");
-        this.$router.push("/admin");
+        this.$router.push("/admin/home");
       } catch (error: any) {
         this.toast.error(error.message);
       }
@@ -587,149 +706,684 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.container {
-  max-width: 600px;
-  min-height: 100vh;
-}
-
-.card {
-  border: 1px solid #e3e3e3;
-  border-radius: 8px;
-}
-
-.btn-primary {
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.custom-offer-button {
-  width: 200px;
-  height: 40px;
-  font-size: 20px;
-  padding: 4px 20px;
-  margin-bottom: 15px;
-}
-
-.offer-collection-box {
-  border: 2px solid #007bff;
+.recommendation-container {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
   background-color: #f8f9fa;
+}
+
+.search-section {
+  margin-bottom: 32px;
+}
+
+.search-card {
+  background: white;
   border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
-  margin-bottom: 30px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  max-width: 600px;
+  margin: 0 auto;
 }
 
-.reservation-box {
-  border: 1px solid #007bff;
+.search-title {
+  text-align: center;
+  color: #1a1a1a;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+
+.search-form {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  gap: 12px;
+}
+
+.search-input {
+  flex: 1;
+  padding: 12px 16px;
+  border: 1px solid #e9ecef;
   border-radius: 8px;
-  padding: 15px;
-  background-color: #f8f9fa;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.box-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 10px;
-}
-
-.box-content p {
-  margin: 5px 0;
   font-size: 16px;
+  transition: all 0.2s ease;
 }
 
-.recommendation-box {
-  border: 1px solid #28a745;
+.search-input:focus {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+  outline: none;
+}
+
+.search-button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
   border-radius: 8px;
-  padding: 15px;
-  background-color: #f1f3f4;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
+  font-size: 16px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.search-button:hover {
+  background: #1565c0;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 48px 0;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #1976d2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.alert-container {
+  max-width: 600px;
+  margin: 32px auto;
+}
+
+.alert {
+  padding: 16px;
+  border-radius: 8px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.alert-info {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.details-column,
+.recommendations-column {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.details-card,
+.recommendations-card {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.card-title {
+  font-size: 20px;
+  color: #1a1a1a;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.details-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e9ecef;
+  margin-bottom: 20px;
+}
+
+.user-avatar {
+  width: 48px;
+  height: 48px;
+  background: #e3f2fd;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #1976d2;
+  font-size: 24px;
+}
+
+.user-details {
+  flex: 1;
+}
+
+.user-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.request-id {
+  font-size: 14px;
+  color: #666;
+}
+
+.request-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #1a1a1a;
+}
+
+.detail-row i {
+  width: 20px;
+  color: #1976d2;
+}
+
+.detail-row .label {
+  min-width: 100px;
+  color: #666;
+  font-weight: 500;
+}
+
+.detail-row .value {
+  flex: 1;
+}
+
+.detail-row .value.highlight {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.experiences-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e9ecef;
+}
+
+.experiences-section h4 {
+  font-size: 16px;
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.experiences-section h4 i {
+  color: #f57c00;
+}
+
+.experience-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.experience-tag {
+  background: #fff3e0;
+  color: #f57c00;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 14px;
+}
+
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 .recommendation-item {
-  width: 100%;
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.recommendation-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.recommendation-item.active {
+  border: 2px solid #1976d2;
+  background: white;
+}
+
+.recommendation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.hotel-info {
+  flex: 1;
+}
+
+.hotel-name {
+  font-size: 18px;
+  color: #1a1a1a;
+  margin: 0 0 4px 0;
+}
+
+.hotel-location {
+  color: #666;
+  font-size: 14px;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin-bottom: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  gap: 4px;
+}
+
+.match-score {
+  background: #e3f2fd;
+  padding: 8px 12px;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.score-label {
+  font-size: 12px;
+  color: #1976d2;
+}
+
+.score-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1565c0;
+}
+
+.existing-offer {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.existing-offer h5 {
+  color: #1a1a1a;
+  margin: 0 0 12px 0;
 }
 
 .offer-details {
-  margin-top: 15px;
-  padding: 10px;
-  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.offer-row {
+  display: flex;
+  justify-content: space-between;
+  color: #666;
+}
+
+.offer-row .price {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.confirm-action {
+  margin-top: 16px;
+}
+
+.confirm-button {
+  width: 100%;
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 12px;
   border-radius: 8px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
 }
 
-.offer-details h5 {
-  margin-bottom: 10px;
+.confirm-button:hover {
+  background: #1b5e20;
+}
+
+.offer-form {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.offer-form-header {
+  margin-bottom: 24px;
+}
+
+.offer-form-header h5 {
+  color: #1976d2;
   font-size: 18px;
-  font-weight: bold;
-  color: #007bff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.offer-summary {
-  background-color: #d4edda;
-  padding: 10px;
-  border-radius: 5px;
-  margin-top: 10px;
-  color: #155724;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 20px;
 }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group label i {
+  color: #1976d2;
+  width: 16px;
+}
+
+.modern-input,
+.modern-select {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+  color: #333;
+  width: 100%;
+}
+
+.modern-input:focus,
+.modern-select:focus {
+  border-color: #1976d2;
+  background: white;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.modern-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+.price-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.currency-symbol {
+  position: absolute;
+  left: 16px;
+  color: #666;
+  font-weight: 500;
+}
+
+.price-input {
+  padding-left: 32px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.cancel-button,
+.save-offer-button {
+  flex: 1;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.cancel-button {
+  background: #f5f5f5;
+  color: #666;
+}
+
+.cancel-button:hover {
+  background: #e0e0e0;
+}
+
+.save-offer-button {
+  background: #1976d2;
+  color: white;
+}
+
+.save-offer-button:hover {
+  background: #1565c0;
+}
+
+.collect-offers-section {
+  margin-top: 32px;
+}
+
+.collect-offers-button {
+  background: #1976d2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.collect-offers-button:hover {
+  background: #1565c0;
+}
+
+.offers-collection {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-top: 24px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.offers-collection h3 {
+  color: #1a1a1a;
+  margin: 0 0 24px 0;
+}
+
+.offers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.offer-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.offer-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.offer-checkbox {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.offer-checkbox input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.offer-checkbox input:checked ~ .checkmark {
+  background: #1976d2;
+  border-color: #1976d2;
+}
+
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+.offer-checkbox input:checked ~ .checkmark:after {
+  display: block;
+}
+
+.offer-checkbox .checkmark:after {
+  left: 6px;
+  top: 2px;
+  width: 5px;
+  height: 10px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.offer-price {
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.offer-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.offer-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+}
+
+.submit-offers-button {
+  background: #2e7d32;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+}
+
+.submit-offers-button:hover {
+  background: #1b5e20;
+}
+
+@media (max-width: 1200px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .input-group {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .offers-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+}
+
 .no-spinner::-webkit-outer-spin-button,
 .no-spinner::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
-}
-
-.box-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #007bff;
-  margin-bottom: 20px;
-  text-align: center;
-}
-
-.list-group-item.offer-item {
-  border: 1px solid #e3e3e3;
-  border-radius: 8px;
-  padding: 15px;
-  margin-bottom: 10px;
-  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
-  transition: background-color 0.3s ease;
-}
-
-.list-group-item.offer-item:hover {
-  background-color: #f1f1f1;
-}
-
-.offer-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.offer-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
-}
-
-.offer-price {
-  font-size: 18px;
-  color: #28a745;
-}
-
-.offer-details {
-  margin: 5px 0;
-  font-size: 16px;
-  color: #555;
 }
 </style>

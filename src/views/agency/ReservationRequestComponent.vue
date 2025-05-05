@@ -17,11 +17,10 @@
       >
         <e-columns>
           <e-column
-            field="reservation_request_id"
+            field="reservation_id"
             headerText="ID"
             textAlign="Left"
             isPrimaryKey="true"
-            :visible="false"
             width="50px"
           ></e-column>
           <e-column

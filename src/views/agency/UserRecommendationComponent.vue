@@ -318,31 +318,35 @@
                         <i class="fas fa-utensils"></i>
                         Board Type
                       </label>
-                      <select
-                        v-model="offerDetails.board_type"
-                        id="board_type"
-                        class="modern-select"
-                        required
-                      >
-                        <option value="">Select board type</option>
-                        <option value="Bed and Breakfast">
-                          Bed and Breakfast
-                        </option>
-                        <option value="Half Board">Half Board</option>
-                        <option value="Full Board">Full Board</option>
-                        <option value="All Inclusive">All Inclusive</option>
-                        <option value="Room Only">Room Only</option>
-                        <option value="Nonalcohol All Inclusive">
-                          Nonalcohol All Inclusive
-                        </option>
-                        <option value="Nonalcohol Ultra All Inclusive">
-                          Nonalcohol Ultra All Inclusive
-                        </option>
-                        <option value="Full Board Plus">Full Board Plus</option>
-                        <option value="Ultra All Inclusive">
-                          Ultra All Inclusive
-                        </option>
-                      </select>
+                      <div class="select-container">
+                        <select
+                          v-model="offerDetails.board_type"
+                          id="board_type"
+                          class="modern-select"
+                          required
+                        >
+                          <option value="">Select board type</option>
+                          <option value="Bed and Breakfast">
+                            Bed and Breakfast
+                          </option>
+                          <option value="Half Board">Half Board</option>
+                          <option value="Full Board">Full Board</option>
+                          <option value="All Inclusive">All Inclusive</option>
+                          <option value="Room Only">Room Only</option>
+                          <option value="Nonalcohol All Inclusive">
+                            Nonalcohol All Inclusive
+                          </option>
+                          <option value="Nonalcohol Ultra All Inclusive">
+                            Nonalcohol Ultra All Inclusive
+                          </option>
+                          <option value="Full Board Plus">
+                            Full Board Plus
+                          </option>
+                          <option value="Ultra All Inclusive">
+                            Ultra All Inclusive
+                          </option>
+                        </select>
+                      </div>
                     </div>
                     <div class="form-actions">
                       <button
@@ -1175,11 +1179,133 @@ export default defineComponent({
 }
 
 .modern-select {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  background: white;
+  color: #333;
+  width: 100%;
+  cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 16px center;
-  padding-right: 40px;
+  background-size: 16px;
+  padding-right: 48px;
+}
+
+.modern-select:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+  outline: none;
+}
+
+.modern-select:hover {
+  border-color: #4299e1;
+  background-color: #f8fafc;
+}
+
+.modern-select option {
+  padding: 12px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+}
+
+/* Webkit (Chrome, Safari) için özel stiller */
+.modern-select::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modern-select::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.modern-select::-webkit-scrollbar-thumb {
+  background: #4299e1;
+  border-radius: 4px;
+}
+
+.modern-select::-webkit-scrollbar-thumb:hover {
+  background: #3182ce;
+}
+
+/* Firefox için özel stiller */
+.modern-select {
+  scrollbar-width: thin;
+  scrollbar-color: #4299e1 #f1f1f1;
+}
+
+/* Select açıldığında option'ların stillendirilmesi için */
+.modern-select option:hover,
+.modern-select option:focus,
+.modern-select option:active,
+.modern-select option:checked {
+  background: linear-gradient(0deg, #4299e1 0%, #4299e1 100%);
+  background-color: #4299e1 !important;
+  color: white !important;
+}
+
+/* Select container stil güncellemesi */
+.form-group {
+  position: relative;
+}
+
+.form-group label[for="board_type"] {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #4a5568;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.form-group label[for="board_type"] i {
+  color: #4299e1;
+  font-size: 16px;
+}
+
+/* Select placeholder stil güncellemesi */
+.modern-select option[value=""] {
+  color: #a0aec0;
+}
+
+/* Select option grupları için stil */
+.modern-select optgroup {
+  font-weight: 600;
+  color: #2d3748;
+  padding: 8px;
+  background-color: #f7fafc;
+}
+
+/* Disabled options için stil */
+.modern-select option:disabled {
+  color: #cbd5e0;
+  background-color: #f7fafc;
+}
+
+/* Hover efekti için container stil */
+.select-container {
+  position: relative;
+  width: 100%;
+}
+
+.select-container::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  transition: transform 0.3s ease;
+}
+
+.modern-select:focus + .select-container::after {
+  transform: translateY(-50%) rotate(180deg);
 }
 
 .price-input-wrapper {

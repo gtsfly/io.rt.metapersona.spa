@@ -9,7 +9,7 @@
           v-model="searchReservationId"
           type="number"
           class="form-control"
-          placeholder="Enter Reservation ID"
+          placeholder="Enter Confirmed Reservation ID"
           @keyup.enter="searchReservation"
         />
         <button @click="searchReservation" class="btn btn-primary mt-2">
@@ -108,7 +108,7 @@
             '{{ experience }}' Rating:
           </label>
           <input
-            v-model="feedback[`experience_${index + 1}_rating`]"
+            v-model="(feedback as any)[`experience_${index + 1}_rating`]"
             type="number"
             class="form-control"
             :id="`experience_${index + 1}_rating`"
@@ -221,6 +221,27 @@ export default defineComponent({
         console.log(`Experience 1: ${feedback.experience_1}`);
         console.log(`Experience 2: ${feedback.experience_2}`);
         console.log(`Experience 3: ${feedback.experience_3}`);
+
+        try {
+          const existingFeedback =
+            await userFeedbackService.getFeedbackByReservationId(
+              parseInt(searchReservationId.value)
+            );
+
+          if (existingFeedback) {
+            feedback.overall_rating = existingFeedback.overall_rating;
+            feedback.experience_1_rating = existingFeedback.experience_1_rating;
+            feedback.experience_2_rating = existingFeedback.experience_2_rating;
+            feedback.experience_3_rating = existingFeedback.experience_3_rating;
+            feedback.would_visit_again = existingFeedback.would_visit_again;
+            feedback.additional_comments = existingFeedback.additional_comments;
+            toast.info(
+              "Existing feedback for this reservation has been loaded."
+            );
+          }
+        } catch (feedbackError) {
+          console.log("Bu rezervasyon için henüz feedback verilmemiş.");
+        }
 
         searchPerformed.value = true;
         toast.success("Reservation details loaded successfully.");

@@ -198,7 +198,7 @@ export default {
     async fetchLocations() {
       try {
         const response = await axios.get(
-          "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/hotel/locations"
+          "https://localhost:7018/api/hotel/locations"
         );
         this.locations = response.data;
       } catch (error) {

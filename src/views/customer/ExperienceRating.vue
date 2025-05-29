@@ -63,7 +63,7 @@ export default {
     async fetchExperiences() {
       try {
         const response = await axios.get(
-          "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/experience"
+          "https://localhost:7018/api/experience"
         );
         this.experiences = response.data;
       } catch (error) {

@@ -5,7 +5,7 @@
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Reservation ID</th>
+            <th>Confirmed Reservation ID</th>
             <th>User Name</th>
             <th>Hotel Name</th>
             <th>Check-in Date</th>
@@ -60,7 +60,7 @@ export default {
     const getHotelName = async (hotelId) => {
       try {
         const response = await axios.get(
-          `https://tubitak-proje.dev.reisetech.io/api/metapersona/api/Hotel/${hotelId}`
+          `https://localhost:7018/api/Hotel/${hotelId}`
         );
         return response.data.name;
       } catch (error) {
@@ -73,11 +73,9 @@ export default {
       try {
         const [reservationsResponse, feedbackStatusResponse] =
           await Promise.all([
+            axios.get("https://localhost:7018/api/ReservationConfirmed"),
             axios.get(
-              "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/ReservationConfirmed"
-            ),
-            axios.get(
-              "https://tubitak-proje.dev.reisetech.io/api/metapersona/api/UserHotelExperience/feedback-status"
+              "https://localhost:7018/api/UserHotelExperience/feedback-status"
             ),
           ]);
 
@@ -88,7 +86,7 @@ export default {
           reservations.map(async (reservation) => {
             const feedbackStatus = feedbackStatuses.find(
               (status) =>
-                status.reservationId === reservation.confirmed_reservation_id
+                status.ReservationId === reservation.confirmed_reservation_id
             );
             const userId = reservation.user_id;
             const userName = await getUserNameByUserId(userId);
@@ -100,7 +98,7 @@ export default {
               hotelName: hotelName,
               checkInDate: reservation.check_in_date,
               checkOutDate: reservation.check_out_date,
-              hasFeedback: feedbackStatus ? feedbackStatus.hasFeedback : false,
+              hasFeedback: feedbackStatus ? feedbackStatus.HasFeedback : false,
             };
           })
         );
